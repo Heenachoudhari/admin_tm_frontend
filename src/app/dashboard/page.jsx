@@ -3,6 +3,13 @@
 import React, { useState } from "react";
 import Sidebar from "@/components/layout/sidebar";
 import NavBar from "@/components/layout/navbar";
+import WelcomeBanner from "@/components/dashboard/Welcomebanner";
+import CloseProject from "@/components/dashboard/CloseProject";
+import OngoingProjects from "@/components/dashboard/OngoingProject";
+import CalendarWidget from "@/components/dashboard/CalendarWidget";
+import OpenProject from "@/components/dashboard/OpenProject";
+import InCompleteProject from "@/components/dashboard/InCompleteProject";
+import ProgressProject from "@/components/dashboard/ProgressProject";
 
 function Page() {
     const [selected, setSelected] = useState("This Year");
@@ -48,6 +55,13 @@ function Page() {
                     </div>
                 </main> */}
 
+                <WelcomeBanner/>
+                <OpenProject/>
+                <CloseProject/>
+                <InCompleteProject/>
+                <ProgressProject/>
+                <OngoingProjects/>
+                <CalendarWidget/>
 
 
                 {/* Mobile View */}
