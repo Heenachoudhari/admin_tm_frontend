@@ -16,8 +16,8 @@ function Page() {
 
             {/* Main Content */}
             <div className="w-full md:w-5/6 md:flex-1 h-screen bg-white">
-                {/* Desktop Navbar (hidden on mobile)
-                <NavBar/> */}
+                {/* {/* Desktop Navbar (hidden on mobile) */}
+                <NavBar/>
 
                 {/* Page Content
                 <main className="hidden md:block px-6 py-6">

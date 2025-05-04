@@ -1,6 +1,7 @@
 
 import Sidebar from '@/components/layout/sidebar';
 import Leave from '@/components/leave/applyleave';
+import NavBar from '@/components/layout/navbar';
 import React from 'react'
 
 export default function Home() {
@@ -11,10 +12,10 @@ export default function Home() {
                 <Sidebar/>
             </div>
 
-            {/* Navbar - Fixed
+            {/* Navbar - Fixed*/}
             <div className="fixed top-0 right-0 w-5/6 ml-[16.6667%] z-10">
                 <NavBar />
-            </div> */}
+            </div> 
 
             {/* Scrollable Content below Navbar */}
             <div className="mt-[60px] ml-[16.6667%] h-[calc(100vh-60px)] overflow-y-auto p-4 bg-white">
