@@ -1,30 +1,35 @@
-'use client';
-import Head from 'next/head';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+'use client'; // This ensures the component is client-side
+
+import { useRouter } from 'next/navigation';  // Use 'next/navigation' in Next.js 13+ for router
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function Loginpage() {
-    const router = useRouter();
+    const router = useRouter();  // Use useRouter hook here
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
+    // Validate password (between 8 and 10 characters with letters, numbers, and special symbols)
     const validatePassword = (pwd) => {
-        const lengthValid = pwd.length >= 8 && pwd.length <= 10; // Check length between 8 and 10
-        const hasLetter = /[a-zA-Z]/.test(pwd);
+        const lengthValid = pwd.length >= 8 && pwd.length <= 10;
+        const hasUpperCase = /[A-Z]/.test(pwd);
+        const hasLowerCase = /[a-z]/.test(pwd);
         const hasNumber = /\d/.test(pwd);
         const hasSymbol = /[^a-zA-Z0-9]/.test(pwd);
-        return lengthValid && hasLetter && hasNumber && hasSymbol;
+        return lengthValid && hasUpperCase && hasLowerCase && hasNumber && hasSymbol;
     };
 
+    // Validate if the input is a phone number
     const isPhoneNumber = (input) => /^\d{10}$/.test(input);
+    // Validate if the input is an email
     const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
 
+    // Handle the login process
     const handleLogin = async (event) => {
         event.preventDefault();
 
@@ -42,17 +47,15 @@ export default function Loginpage() {
         }
 
         if (!validatePassword(password)) {
-            toast.info('Password must be between 8 and 10 characters and include at least one letter, number, and special character.');
+            toast.info('Password must be between 8 and 10 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.');
             return;
         }
 
         try {
             const res = await fetch('http://localhost:4000/api/user/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // important to send cookies if your backend sets any
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     identifier: emailOrPhone,
                     password: password,
@@ -76,12 +79,10 @@ export default function Loginpage() {
         }
     };
 
-
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-white">
             <Toaster position="top-center" />
             <div className="flex w-full h-screen shadow-lg rounded-none overflow-hidden">
-                {/* Left Panel */}
                 <div className="w-1/2 h-full bg-[url('/login/leftbg.jpg')] bg-cover bg-center p-8 flex flex-col justify-center items-center relative">
                     <Image src="/login/logo.png" alt="Task Manager Icon" width={160} height={160} className="mb-4" />
                     <h1 className="text-4xl font-bold text-black mb-4">Welcome Back!</h1>
@@ -92,7 +93,6 @@ export default function Loginpage() {
                     </p>
                 </div>
 
-                {/* Right Panel */}
                 <div
                     className="w-1/2 h-full flex flex-col items-center justify-center px-8 relative"
                     style={{
@@ -102,7 +102,6 @@ export default function Loginpage() {
                         backgroundPosition: 'center',
                     }}
                 >
-                    {/* Decorative Images */}
                     <Image src="/login/vector.png" alt="vector" height={400} width={96} className="absolute z-0" style={{ top: '80px', right: '100px' }} />
                     <Image src="/login/vector1.png" alt="vector" height={50} width={50} className="absolute z-0" style={{ top: '55px', left: '50px', transform: 'rotate(15deg)' }} />
                     <Image src="/login/vector_right.png" alt="vector" height={45} width={45} className="absolute z-0" style={{ bottom: '200px', left: '75px', transform: 'rotate(350deg)' }} />
@@ -112,15 +111,12 @@ export default function Loginpage() {
                     <Image src="/login/vector_right.png" alt="vector" height={35} width={35} className="absolute z-10" style={{ bottom: '30px', left: '60px' }} />
                     <Image src="/login/vector_flag.png" alt="vector" height={50} width={50} className="absolute z-0" style={{ bottom: '300px', right: '75px' }} />
 
-                    {/* Heading */}
-                    <h1 className="text-4xl font-bold text-black mb-8 z-10">User Login</h1>
+                    <h1 className="text-4xl font-bold text-black mb-8 z-10">Admin Login</h1>
 
-                    {/* Card */}
                     <div className="bg-white rounded-2xl shadow-[0_7px_25px_rgba(0,0,0,0.1)] p-10 w-[550px] h-[400px] max-w-full z-10">
                         <form className="space-y-4" onSubmit={handleLogin}>
-                            {/* Email / Phone */}
                             <div>
-                                <label className="block text-sm font-medium text-black mb-1 font-poppins">
+                                <label htmlFor="emailOrPhone" className="block text-sm font-medium text-black mb-1 font-poppins">
                                     E-mail / Phone
                                 </label>
 
@@ -129,15 +125,12 @@ export default function Loginpage() {
                                     value={emailOrPhone}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        const isNumeric = /^\d+$/.test(value); // Check if input is numeric
-
+                                        const isNumeric = /^\d+$/.test(value);
                                         if (isNumeric) {
-                                            // Restrict phone number to exactly 10 digits
                                             if (value.length <= 10) {
                                                 setEmailOrPhone(value);
                                             }
                                         } else {
-                                            // Allow email input without restrictions
                                             setEmailOrPhone(value);
                                         }
                                     }}
@@ -146,19 +139,17 @@ export default function Loginpage() {
                                 />
                             </div>
 
-                            {/* Password */}
                             <div className="relative">
                                 <label className="block text-sm font-medium text-black mb-1 font-poppins">
                                     Password
                                 </label>
-
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter 8-10 character secure password"
                                     required
-                                    minLength={8} // Minimum length
+                                    minLength={8}
                                     className="w-full px-4 py-2 rounded-xl bg-white text-black shadow-[0_7px_25px_rgba(0,0,0,0.1)] focus:outline-none pr-10"
                                 />
                                 <span
@@ -168,7 +159,6 @@ export default function Loginpage() {
                                 >
                                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                                 </span>
-
                                 <Link href="/forgetpassword" className="text-xs text-right block mt-4 text-[rgba(62,144,151,1)] hover:underline">
                                     Forget Password?
                                 </Link>
@@ -176,7 +166,6 @@ export default function Loginpage() {
 
                             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-                            {/* Login Button */}
                             <div className="flex justify-center mt-4">
                                 <button
                                     type="submit"
@@ -186,9 +175,7 @@ export default function Loginpage() {
                                 </button>
                             </div>
                         </form>
-
-                        {/* Sign Up Prompt */}
-                        <p className="text-sm mt-6 text-center  text-black font-semibold ">
+                        <p className="text-sm mt-6 text-center text-black font-semibold">
                             Don’t have an account?{' '}
                             <Link href="/signup" className="text-[rgba(62,144,151,1)] hover:underline">
                                 Sign Up
