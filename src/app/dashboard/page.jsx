@@ -18,13 +18,13 @@ function Page() {
         <div className="min-h-screen md:flex bg-white">
             {/* Desktop Sidebar Section (visible on md+) */}
             <div className="md:w-1/6">
-                <Sidebar/>
+                <Sidebar />
             </div>
 
             {/* Main Content */}
             <div className="w-full md:w-5/6 md:flex-1 h-screen bg-white">
                 {/* {/* Desktop Navbar (hidden on mobile) */}
-                <NavBar/>
+                <NavBar />
 
                 {/* Page Content
                 <main className="hidden md:block px-6 py-6">
@@ -55,13 +55,15 @@ function Page() {
                     </div>
                 </main> */}
 
-                <WelcomeBanner/>
-                <OpenProject/>
-                <CloseProject/>
-                <InCompleteProject/>
-                <ProgressProject/>
-                <OngoingProjects/>
-                <CalendarWidget/>
+                <WelcomeBanner />
+                <div className="grid grid-cols-2 p-8 items-center justify-items-center w-full gap-y-8">
+                    <OpenProject />
+                    <CloseProject />
+                    <InCompleteProject />
+                    <ProgressProject />
+                </div>
+                <OngoingProjects />
+                <CalendarWidget />
 
 
                 {/* Mobile View */}

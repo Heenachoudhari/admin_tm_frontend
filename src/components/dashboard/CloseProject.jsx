@@ -2,6 +2,8 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { RiTaskLine } from 'react-icons/ri';
+import { FaEllipsisH } from 'react-icons/fa';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function CloseProject() {
@@ -25,24 +27,23 @@ export default function CloseProject() {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow p-4 flex justify-between items-center w-full max-w-md">
+        <div className="bg-white relative rounded-xl shadow-[0px_3px_4px_rgba(0,0,0,0.4)] p-4 flex justify-between px-14 items-center w-full max-w-xl h-44">
+            <div className="absolute top-2 right-4 text-[#7B7B7B]"><FaEllipsisH size={35} /></div>
             {/* Left */}
-            <div className="flex items-center gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                    <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3H5a2 2 0 0 0-2 2v16l4-4h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM10 14l-2-2 1.41-1.41L10 11.17l4.59-4.59L16 8l-6 6z" />
-                    </svg>
+            <div className="flex items-center justify-center w-full gap-8">
+                <div className="bg-[#A7BBFF] p-3 mt-4 rounded-lg">
+                    <RiTaskLine size={70} className='text-[#2659FF]' />
                 </div>
-                <div>
-                    <p className="text-sm text-gray-500">Complete Projects</p>
-                    <h3 className="text-2xl font-bold text-blue-600">05</h3>
+                <div className='flex flex-col items-center justify-center'>
+                    <p className="text-md font-bold text-black -mt-9 mb-4">Complete Projects</p>
+                    <h3 className="text-4xl font-bold text-blue-600">05</h3>
                 </div>
             </div>
 
             {/* Right - Chart */}
-            <div className="relative w-16 h-16">
+            <div className="relative w-32 h-32">
                 <Doughnut data={data} options={options} />
-                <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-700">
+                <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-gray-700">
                     50%
                 </div>
             </div>
