@@ -26,7 +26,7 @@ const projectData = [
 
 export default function OngoingProject() {
     return (
-        <div className="bg-white p-6 rounded-xl shadow-md max-w-3xl">
+        <div className="bg-white p-6 rounded-xl shadow-[0px_3px_4px_rgba(0,0,0,0.4)] max-w-xl">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Ongoing Projects</h2>
                 <div className="flex space-x-1">

@@ -20,7 +20,7 @@ const eventIndicators = {
 
 const CalendarWidget = () => {
     return (
-        <div className="max-w-sm border-2 border-blue-500 rounded-lg overflow-hidden shadow-lg">
+        <div className="max-w-xl rounded-lg overflow-hidden w-full shadow-[0px_3px_4px_rgba(0,0,0,0.4)]">
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-white">
                 <h2 className="text-lg font-bold">May 2025</h2>
