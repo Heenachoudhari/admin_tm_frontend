@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+
 import gsap from "gsap";
 import { AiFillDelete } from "react-icons/ai";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,7 +11,6 @@ import * as XLSX from "xlsx";
 export default function EditTimeSheet() {
     const [items, setItems] = useState([]);
     const [date, setDate] = useState("");
-    const router = useRouter();
 
     const dummyData = {
         "2025-05-01": [
@@ -43,8 +42,7 @@ export default function EditTimeSheet() {
         ],
     };
 
-
-    const [selectedManagers, setSelectedManagers] = useState(["Prashant Patil", "Ayaan Raje"]);
+    const [selectedManagers, setSelectedManagers] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [todayHours, setTodayHours] = useState([]);
     const [totalTime, setTotalTime] = useState("00:00");
@@ -63,17 +61,41 @@ export default function EditTimeSheet() {
     useEffect(() => {
         if (date && dummyData[date]) {
             setItems(dummyData[date]);
+            // Convert duration strings to numeric format for calculations
             const times = dummyData[date].map((item) =>
-                item.duration.replace(":", "")
+                item.duration.replace(/\D/g, "").padStart(4, '0')
             );
             setTodayHours(times);
-            setTotalTime(addTimeStrings(times));
+            
+            // Calculate total time after setting today's hours
+            setTimeout(() => {
+                setTotalTime(calculateTotalTime(times));
+            }, 0);
         } else {
             setItems([]);
             setTodayHours([]);
             setTotalTime("00:00");
         }
     }, [date]);
+
+    // Calculate total time from an array of time strings in format "HHMM"
+    const calculateTotalTime = (timeArray) => {
+        let totalMinutes = 0;
+    
+        for (const time of timeArray) {
+            if (time && time.length === 4) {
+                const h = parseInt(time.slice(0, 2), 10);
+                const m = parseInt(time.slice(2, 4), 10);
+                if (!isNaN(h) && !isNaN(m) && h < 24 && m < 60) {
+                    totalMinutes += h * 60 + m;
+                }
+            }
+        }
+    
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    };
 
     const formatTime = (date) =>
         date.toLocaleTimeString([], {
@@ -83,22 +105,29 @@ export default function EditTimeSheet() {
         });
 
     const formatDuration = (duration) => {
-        let numericValue = duration.replace(/\D/g, "").slice(0, 4);
-        return `${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)}`;
+        let numericValue = duration.replace(/\D/g, "").slice(0, 4); // Get numeric part and limit to 4 digits
+        if (numericValue.length === 4) {
+            return `${numericValue.slice(0, 2)}:${numericValue.slice(2, 4)}`;  // Format as hh:mm
+        }
+        return "00:00"; // Default fallback
     };
 
     const getNextTimeRange = () => {
-        if (items.length === 0) return "09:00 AM - 10:00 AM";
-        const lastTime = items[items.length - 1].timeRange?.split(" - ")[1] || "10:00 AM";
+        if (items.length === 0) return "09:00 AM - 10:00 AM"; // Default if no items
+        const lastTime = items[items.length - 1].timeRange?.split(" - ")[1] || items[items.length - 1].time?.split(" to ")[1] || "6:00 PM";
         const [time, period] = lastTime.split(" ");
         let [hour, minute] = time.split(":").map(Number);
+        
         if (period === "PM" && hour !== 12) hour += 12;
         if (period === "AM" && hour === 12) hour = 0;
+        
+        // Increment the time by 1 hour (60 minutes)
         const start = new Date(0, 0, 0, hour, minute);
-        const end = new Date(start.getTime() + 60 * 60000);
+        const end = new Date(start.getTime() + 60 * 60000); // 60 minutes later
+        
         return `${formatTime(start)} - ${formatTime(end)}`;
     };
-
+    
     const addTimelineItem = (type) => {
         const newItem = {
             task: `${type} task`,
@@ -107,9 +136,22 @@ export default function EditTimeSheet() {
             type,
             bucket: type,
         };
+        
+        // Update items state with the new item
         setItems((prev) => [...prev, newItem]);
-        setTodayHours((prev) => [...prev, "0100"]);
+        
+        // Update todayHours state with the new duration in numeric format
+        const newDuration = "0100"; // Represents 01:00 in numeric format
+        setTodayHours((prev) => {
+            const updatedHours = [...prev, newDuration];
+            // Update total time after adding new item
+            setTimeout(() => {
+                setTotalTime(calculateTotalTime(updatedHours));
+            }, 0);
+            return updatedHours;
+        });
 
+        // Animation effect for the new row
         setTimeout(() => {
             const newIndex = items.length;
             const lastRow = rowRefs.current[newIndex];
@@ -130,42 +172,51 @@ export default function EditTimeSheet() {
     };
 
     const handleDurationChange = (index, value) => {
+        // Format the duration for display
         let formattedDuration = formatDuration(value);
-        const updated = [...todayHours];
-        updated[index] = value.replace(/\D/g, "").slice(0, 4);
-        setTodayHours(updated);
-        const validTimes = updated.filter((val) => val.length === 4);
-        setTotalTime(addTimeStrings(validTimes));
+        
+        // Update the item's duration display
         updateItem(index, "duration", formattedDuration);
-    };
-
-    const addTimeStrings = (times) => {
-        let totalMinutes = 0;
-        for (const time of times) {
-            const h = parseInt(time.slice(0, 2), 10);
-            const m = parseInt(time.slice(2, 4), 10);
-            if (!isNaN(h) && !isNaN(m) && h < 24 && m < 60) {
-                totalMinutes += h * 60 + m;
-            }
-        }
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+        
+        // Update the numeric duration values array
+        const numericValue = value.replace(/\D/g, "").slice(0, 4).padStart(4, '0'); // Ensuring only numeric values and proper format
+        
+        setTodayHours(prev => {
+            const updated = [...prev];
+            updated[index] = numericValue;
+            
+            // Recalculate total time after changing a duration
+            setTimeout(() => {
+                setTotalTime(calculateTotalTime(updated));
+            }, 0);
+            
+            return updated;
+        });
     };
 
     const deleteItem = (index) => {
-        const updatedItems = [...items];
-        const updatedTimes = [...todayHours];
-        updatedItems.splice(index, 1);
-        updatedTimes.splice(index, 1);
-        setItems(updatedItems);
-        setTodayHours(updatedTimes);
-        setTotalTime(addTimeStrings(updatedTimes.filter((val) => val.length === 4)));
+        setItems(prev => {
+            const updated = [...prev];
+            updated.splice(index, 1);
+            return updated;
+        });
+        
+        setTodayHours(prev => {
+            const updated = [...prev];
+            updated.splice(index, 1);
+            
+            // Recalculate total time after removing an item
+            setTimeout(() => {
+                setTotalTime(calculateTotalTime(updated));
+            }, 0);
+            
+            return updated;
+        });
     };
 
     const handleSubmit = () => {
         console.log({ date, selectedManagers, items, totalTime });
-        toast.success("Timeline submitted successfully!");
+        toast.success("Timeline updated successfully!");
         setDate("");
         setSelectedManagers([]);
         setItems([]);
@@ -186,6 +237,9 @@ export default function EditTimeSheet() {
         XLSX.utils.book_append_sheet(workbook, worksheet, "Timesheet");
         XLSX.writeFile(workbook, "Timesheet.xlsx");
     };
+    
+    const totalMinutes = parseInt(totalTime.split(":")[0]) * 60 + parseInt(totalTime.split(":")[1]);
+    const isLessThanEightHours = totalMinutes < 480;
 
     return (
         <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl">
@@ -202,7 +256,7 @@ export default function EditTimeSheet() {
             <div className="flex justify-end mt-4">
                 <button
                     onClick={exportToExcel}
-                    className="bg-[#018ABE] text-white px-4 py-2 rounded-md hover:bg-green-700"
+                    className="bg-[#018ABE] text-white px-4 py-2 rounded-md hover:bg-[#83c7e1]"
                 >
                     Export
                 </button>
@@ -215,7 +269,7 @@ export default function EditTimeSheet() {
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        className="rounded-md p-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-sm"
+                        className="rounded-md p-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-[0px_2px_0px_rgba(0,0,0,0.2)]"
                     />
                 </div>
 
@@ -223,14 +277,14 @@ export default function EditTimeSheet() {
                     <label className="mb-1 font-medium text-gray-700">Select Manager</label>
                     <button
                         onClick={() => setShowDropdown(!showDropdown)}
-                        className="border border-gray-300 rounded-md px-4 py-2 shadow-sm flex items-center justify-between"
+                        className="border border-gray-300 rounded-md px-4 py-2 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] flex items-center justify-between"
                     >
                         <span className="text-sm text-gray-800">{`All Selected (${selectedManagers.length})`}</span>
                         <FiChevronDown className="text-gray-600 text-lg" />
                     </button>
                     {showDropdown && (
-                        <div className="absolute top-full mt-1 bg-white border border-gray-200 shadow-md rounded-md w-full z-10">
-                            {["Awab Fakih", "Ayaan Raje", "Prashant Patil"].map((managerName) => (
+                        <div className="absolute top-full mt-1 bg-white border border-gray-200 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded-md w-full z-10">
+                            {["Awab Fakih"].map((managerName) => (
                                 <label
                                     key={managerName}
                                     className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -271,63 +325,91 @@ export default function EditTimeSheet() {
             </div>
 
             {/* Timeline Display */}
-            <div className="space-y-4">
-                <table className="min-w-full table-auto border-collapse border border-gray-300">
+            <div className="rounded-lg shadow-[0px_2px_0px_rgba(0,0,0,0.2)] border-t-2 border-[#018ABE] overflow-hidden">
+                <table className="w-full border-collapse">
                     <thead>
-                        <tr className="bg-[#018ABE] text-white">
-                            <th className="px-4 py-2 border border-gray-300 text-left">Bucket</th>
-                            <th className="px-4 py-2 border border-gray-300 text-left">Task</th>
-                            <th className="px-4 py-2 border border-gray-300 text-left">Time</th>
-                            <th className="px-4 py-2 border border-gray-300 text-left">Duration</th>
-                            <th className="px-4 py-2 border border-gray-300 text-left">Action</th>
+                        <tr className="bg-[#018ABE] text-white text-left">
+                            <th className="px-4 py-2 w-[12%]">Bucket</th>
+                            <th className="px-4 py-2 border-l border-r w-[40%] border-white">Task</th>
+                            <th className="px-4 py-2 border-l border-r w-[20%] border-white">Time</th>
+                            <th className="px-4 py-2 border-l border-r w-[10%] border-white">Duration</th>
+                            <th className="px-4 py-2 w-[5%]">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items.map((item, index) => (
-                            <tr key={index} className="bg-white hover:bg-gray-100">
-                                <td className="px-4 py-2 border border-gray-300 w-[10%]">{item.bucket}</td>
-                                <td className="px-4 py-2 border border-gray-300 w-[40%]">{item.task}</td>
-                                <td className="px-4 py-2 border border-gray-300 w-[20%]">{item.time || item.timeRange}</td>
-                                <td className="px-4 py-2 border border-gray-300 w-[10%]">
+                            <tr
+                                key={item.id || index}
+                                ref={(el) => (rowRefs.current[index] = el)}
+                                className="hover:bg-gray-100"
+                            >
+                                <td className="px-4 py-2 border-4 border-white relative">
+                                    <span></span>
+                                    <textarea
+                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        readOnly
+                                        value={item.bucket}
+                                    />
+                                </td>
+                                <td className="px-4 py-2 border-4 border-white relative">
+                                    <span className="custom-border-left"></span>
+                                    <textarea
+                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        value={item.task}
+                                        onChange={(e) => updateItem(index, "task", e.target.value)}
+                                    />
+                                </td>
+                                <td className="px-4 py-2 border-4 border-white relative">
+                                    <span className="custom-border-left"></span>
+                                    <textarea
+                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        readOnly
+                                        value={item.time || item.timeRange}
+                                    />
+                                </td>
+                                <td className="px-4 py-2 border-4 border-white relative">
+                                    <span className="custom-border-left"></span>
                                     <input
                                         type="text"
                                         value={item.duration}
                                         onChange={(e) => handleDurationChange(index, e.target.value)}
-                                        className="border px-2 py-1 rounded-md"
+                                        className="border border-black rounded shadow-[0px_2px_0px_rgba(0,0,0,0.2)] px-2 py-1 w-20 text-center"
                                     />
                                 </td>
-                                <td className="px-4 py-2 border w-[5%] border-gray-300">
-                                    <button
-                                        onClick={() => deleteItem(index)}
-                                        className="text-red-600 hover:text-red-800 "
-                                    >
-                                        <AiFillDelete size={20} />
+                                <td className="px-4 py-2 text-black text-center relative">
+                                    <span className="custom-border-left"></span>
+                                    <button onClick={() => deleteItem(index)} aria-label="Delete item">
+                                        <AiFillDelete className="text-lg hover:text-red-700 transition-all" />
                                     </button>
                                 </td>
                             </tr>
                         ))}
-                        {/* Total Hours Row */}
-                        <tr className="bg-gray-100 mt-3 font-semibold">
+
+                        <tr className="bg-gray-100 font-semibold">
                             <td className="px-4 py-2 text-center" colSpan={3}>
                                 Total Hours
                             </td>
-                            <td className="px-4 py-2 text-center ">
-                                {totalTime}
+                            <td className="px-4 py-2 text-center border-2 border-white shadow-md">
+                                <span
+                                    className={`px-2 py-1 rounded ${
+                                        isLessThanEightHours ? "bg-[#fc6a5d] text-black" : "bg-[#61c973] text-black"
+                                    }`}
+                                >
+                                    {totalTime}
+                                </span>
                             </td>
                             <td className="px-4 py-2"></td>
                         </tr>
                     </tbody>
-
                 </table>
             </div>
 
             <div className="mt-6 flex justify-center items-center">
-
                 <button
                     onClick={handleSubmit}
-                    className="bg-[#018ABE] text-white  px-6 py-2 rounded-lg hover:bg-green-700"
+                    className="bg-[#018ABE] text-white px-6 py-2 rounded-lg hover:bg-[#83c7e1]"
                 >
-                    update
+                    Update
                 </button>
             </div>
         </div>
