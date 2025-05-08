@@ -1,8 +1,9 @@
 
 import Sidebar from '@/components/layout/sidebar';
-import SalarySlipPage from '@/components/salary/salary';
+
 import NavBar from '@/components/layout/navbar';
 import React from 'react'
+import SalarySlipPage from '@/components/salary/salary';
 
 export default function Home() {
     return (
@@ -19,7 +20,7 @@ export default function Home() {
 
             {/* Scrollable Content below Navbar */}
             <div className="mt-[60px] ml-[16.6667%] h-[calc(100vh-60px)] overflow-y-auto p-4 bg-white">
-                <SalarySlipPage/>
+            <SalarySlipPage/>
             </div>
         </div>
     );
