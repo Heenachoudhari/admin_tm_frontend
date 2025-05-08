@@ -66,7 +66,7 @@ export default function EditTimeSheet() {
                 item.duration.replace(/\D/g, "").padStart(4, '0')
             );
             setTodayHours(times);
-            
+
             // Calculate total time after setting today's hours
             setTimeout(() => {
                 setTotalTime(calculateTotalTime(times));
@@ -81,7 +81,7 @@ export default function EditTimeSheet() {
     // Calculate total time from an array of time strings in format "HHMM"
     const calculateTotalTime = (timeArray) => {
         let totalMinutes = 0;
-    
+
         for (const time of timeArray) {
             if (time && time.length === 4) {
                 const h = parseInt(time.slice(0, 2), 10);
@@ -91,7 +91,7 @@ export default function EditTimeSheet() {
                 }
             }
         }
-    
+
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
@@ -117,17 +117,17 @@ export default function EditTimeSheet() {
         const lastTime = items[items.length - 1].timeRange?.split(" - ")[1] || items[items.length - 1].time?.split(" to ")[1] || "6:00 PM";
         const [time, period] = lastTime.split(" ");
         let [hour, minute] = time.split(":").map(Number);
-        
+
         if (period === "PM" && hour !== 12) hour += 12;
         if (period === "AM" && hour === 12) hour = 0;
-        
+
         // Increment the time by 1 hour (60 minutes)
         const start = new Date(0, 0, 0, hour, minute);
         const end = new Date(start.getTime() + 60 * 60000); // 60 minutes later
-        
+
         return `${formatTime(start)} - ${formatTime(end)}`;
     };
-    
+
     const addTimelineItem = (type) => {
         const newItem = {
             task: `${type} task`,
@@ -136,10 +136,10 @@ export default function EditTimeSheet() {
             type,
             bucket: type,
         };
-        
+
         // Update items state with the new item
         setItems((prev) => [...prev, newItem]);
-        
+
         // Update todayHours state with the new duration in numeric format
         const newDuration = "0100"; // Represents 01:00 in numeric format
         setTodayHours((prev) => {
@@ -174,22 +174,22 @@ export default function EditTimeSheet() {
     const handleDurationChange = (index, value) => {
         // Format the duration for display
         let formattedDuration = formatDuration(value);
-        
+
         // Update the item's duration display
         updateItem(index, "duration", formattedDuration);
-        
+
         // Update the numeric duration values array
         const numericValue = value.replace(/\D/g, "").slice(0, 4).padStart(4, '0'); // Ensuring only numeric values and proper format
-        
+
         setTodayHours(prev => {
             const updated = [...prev];
             updated[index] = numericValue;
-            
+
             // Recalculate total time after changing a duration
             setTimeout(() => {
                 setTotalTime(calculateTotalTime(updated));
             }, 0);
-            
+
             return updated;
         });
     };
@@ -200,16 +200,16 @@ export default function EditTimeSheet() {
             updated.splice(index, 1);
             return updated;
         });
-        
+
         setTodayHours(prev => {
             const updated = [...prev];
             updated.splice(index, 1);
-            
+
             // Recalculate total time after removing an item
             setTimeout(() => {
                 setTotalTime(calculateTotalTime(updated));
             }, 0);
-            
+
             return updated;
         });
     };
@@ -237,10 +237,30 @@ export default function EditTimeSheet() {
         XLSX.utils.book_append_sheet(workbook, worksheet, "Timesheet");
         XLSX.writeFile(workbook, "Timesheet.xlsx");
     };
-    
+
     const totalMinutes = parseInt(totalTime.split(":")[0]) * 60 + parseInt(totalTime.split(":")[1]);
     const isLessThanEightHours = totalMinutes < 480;
 
+
+    
+
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target)
+        ) {
+          setShowDropdown(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
     return (
         <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl">
             <Toaster />
@@ -261,7 +281,6 @@ export default function EditTimeSheet() {
                     Export
                 </button>
             </div>
-
             <div className="flex flex-wrap items-end justify-between gap-6 mb-6">
                 <div className="flex flex-col w-[200px]">
                     <label className="mb-1 font-medium text-gray-700">Date</label>
@@ -272,70 +291,77 @@ export default function EditTimeSheet() {
                         className="rounded-md p-1.5 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 shadow-[0px_2px_0px_rgba(0,0,0,0.2)]"
                     />
                 </div>
+          
+            <div className="flex flex-col mr-50 w-[260px] relative">
+  <label className="mb-1 font-medium text-gray-700">Select Manager</label>
+  <button
+    onClick={() => setShowDropdown(!showDropdown)}
+    className="border border-gray-300 rounded-md px-4 py-2 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] flex items-center justify-between"
+  >
+    <span className="text-sm text-gray-800">
+      {selectedManagers.length === 0
+        ? "Select Manager"
+        : selectedManagers.join(", ")}
+    </span>
+    <FiChevronDown className="text-gray-600 text-lg" />
+  </button>
 
-                <div className="flex flex-col mr-50 w-[260px] relative">
-                    <label className="mb-1 font-medium text-gray-700">Select Manager</label>
-                    <button
-                        onClick={() => setShowDropdown(!showDropdown)}
-                        className="border border-gray-300 rounded-md px-4 py-2 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] flex items-center justify-between"
-                    >
-                        <span className="text-sm text-gray-800">{`All Selected (${selectedManagers.length})`}</span>
-                        <FiChevronDown className="text-gray-600 text-lg" />
-                    </button>
-                    {showDropdown && (
-                        <div className="absolute top-full mt-1 bg-white border border-gray-200 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded-md w-full z-10">
-                            {["Awab Fakih"].map((managerName) => (
-                                <label
-                                    key={managerName}
-                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                    <input
-                                        className="w-5 h-5 text-blue-600"
-                                        type="checkbox"
-                                        checked={selectedManagers.includes(managerName)}
-                                        onChange={() =>
-                                            setSelectedManagers((prev) =>
-                                                prev.includes(managerName)
-                                                    ? prev.filter((m) => m !== managerName)
-                                                    : [...prev, managerName]
-                                            )
-                                        }
-                                    />
-                                    {managerName}
-                                </label>
-                            ))}
-                        </div>
-                    )}
-                </div>
+  {showDropdown && (
+  <div
+    className="absolute top-full mt-1 bg-white border border-gray-200 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded-md w-full z-10"
+    onMouseLeave={() => setShowDropdown(false)}
+  >
+    {["Awab Fakih"].map((managerName) => (
+      <label
+        key={managerName}
+        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        <input
+          className="w-5 h-5 text-blue-600"
+          type="checkbox"
+          checked={selectedManagers.includes(managerName)}
+          onChange={() =>
+            setSelectedManagers((prev) =>
+              prev.includes(managerName)
+                ? prev.filter((m) => m !== managerName)
+                : [...prev, managerName]
+            )
+          }
+        />
+        {managerName}
+      </label>
+    ))}
+  </div>
+)}
+
+</div>
 
                 <div className="flex gap-4">
                     <button
                         onClick={() => addTimelineItem("meeting")}
-                        className="bg-black text-white px-4 py-2 rounded-lg cursor-pointer"
+                        className="bg-[#018ABE] text-white px-4 py-2 rounded-lg cursor-pointer"
                     >
                         Add Meeting
                     </button>
                     <button
                         onClick={() => addTimelineItem("miscellaneous")}
-                        className="bg-black text-white px-4 py-2 rounded-lg cursor-pointer"
+                        className="bg-[#018ABE] text-white px-4 py-2 rounded-lg cursor-pointer"
                     >
                         Add Miscellaneous
                     </button>
                 </div>
             </div>
-
-            {/* Timeline Display */}
-            <div className="rounded-lg shadow-[0px_2px_0px_rgba(0,0,0,0.2)] border-t-2 border-[#018ABE] overflow-hidden">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-[#018ABE] text-white text-left">
-                            <th className="px-4 py-2 w-[12%]">Bucket</th>
-                            <th className="px-4 py-2 border-l border-r w-[40%] border-white">Task</th>
-                            <th className="px-4 py-2 border-l border-r w-[20%] border-white">Time</th>
-                            <th className="px-4 py-2 border-l border-r w-[10%] border-white">Duration</th>
-                            <th className="px-4 py-2 w-[5%]">Action</th>
-                        </tr>
-                    </thead>
+            <div className="rounded-md overflow-x-auto mb-4 ">
+  <table className="w-full table-auto border-separate border-spacing-0">
+    <thead>
+      <tr className="bg-[#018ABE] text-white text-center">
+        <th className="px-4 py-2 w-[14%] whitespace-nowrap rounded-tl-md">Bucket</th>
+        <th className="px-4 py-2 border-l border-white w-[40%] whitespace-nowrap">Task</th>
+        <th className="px-4 py-2 border-l border-white w-[20%] whitespace-nowrap">Time</th>
+        <th className="px-4 py-2 border-l border-white w-[10%] whitespace-nowrap">Duration</th>
+        <th className="px-4 py-2 border-l border-white w-[5%] whitespace-nowrap rounded-tr-md">Action</th>
+      </tr>
+    </thead>
                     <tbody>
                         {items.map((item, index) => (
                             <tr
@@ -346,7 +372,7 @@ export default function EditTimeSheet() {
                                 <td className="px-4 py-2 border-4 border-white relative">
                                     <span></span>
                                     <textarea
-                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        className="w-full h-10  text-center border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
                                         readOnly
                                         value={item.bucket}
                                     />
@@ -362,7 +388,7 @@ export default function EditTimeSheet() {
                                 <td className="px-4 py-2 border-4 border-white relative">
                                     <span className="custom-border-left"></span>
                                     <textarea
-                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        className="w-full h-10 text-center  border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
                                         readOnly
                                         value={item.time || item.timeRange}
                                     />
@@ -386,15 +412,13 @@ export default function EditTimeSheet() {
                         ))}
 
                         <tr className="bg-gray-100 font-semibold">
-                            <td className="px-4 py-2 text-center" colSpan={3}>
+                            <td className="text-right relative right-0 px-16 py-2" colSpan={3}>
                                 Total Hours
                             </td>
-                            <td className="px-4 py-2 text-center border-2 border-white shadow-md">
-                                <span
-                                    className={`px-2 py-1 rounded ${
-                                        isLessThanEightHours ? "bg-[#fc6a5d] text-black" : "bg-[#61c973] text-black"
-                                    }`}
-                                >
+
+                            <td className="px-4 py-2 text-center border-l-2 border-r-2 border-white">
+
+                                <span className={`px-2 py-1 rounded ${isLessThanEightHours ? "bg-[#fc6a5d] text-black" : "bg-[#61c973] text-black"}`}>
                                     {totalTime}
                                 </span>
                             </td>
@@ -413,5 +437,6 @@ export default function EditTimeSheet() {
                 </button>
             </div>
         </div>
+        
     );
 }

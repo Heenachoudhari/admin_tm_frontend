@@ -198,11 +198,30 @@ export default function Timeline() {
     };
 
     const handleAddTask = () => {
-        router.push("/add-task");
+        router.push("/task");
     };
     
     const totalMinutes = parseInt(totalTime.split(":")[0]) * 60 + parseInt(totalTime.split(":")[1]);
     const isLessThanEightHours = totalMinutes < 480;
+
+
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target)
+        ) {
+          setShowDropdown(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
     return (
         <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl">
@@ -217,18 +236,14 @@ export default function Timeline() {
             <span className="text-2xl font-bold text-gray-800">sheet</span>
 
             <div className="flex justify-end gap-8 mb-4">
-                <button
-                    onClick={handleEditTimesheet}
-                    className="bg-[#018ABE] hover:bg-[#0177a6] text-white font-semibold px-4 py-2 rounded-md shadow-[0px_2px_0px_rgba(0,0,0,0.2)] cursor-pointer"
-                >
+            <div className="flex justify-end gap-8 mb-4">
+                <button onClick={handleEditTimesheet} className="bg-[#018ABE] cursor-pointer  hover:bg-[#0177a6] text-white font-semibold px-4 py-2 rounded-md">
                     Edit Timesheet
                 </button>
-                <button
-                    onClick={handleAddTask}
-                    className="bg-[#018ABE] hover:bg-[#0177a6] text-white font-semibold px-4 py-2 rounded-md shadow-[0px_2px_0px_rgba(0,0,0,0.2)] cursor-pointer"
-                >
+                <button onClick={handleAddTask} className="bg-[#018ABE] cursor-pointer  hover:bg-[#0177a6] text-white font-semibold px-4 py-2 rounded-md">
                     Add Task
                 </button>
+            </div>
             </div>
 
             <div className="flex flex-wrap items-end justify-between gap-6 mb-6">
@@ -243,50 +258,60 @@ export default function Timeline() {
                 </div>
 
                 <div className="flex flex-col mr-50 w-[260px] relative">
-                    <label className="mb-1 font-medium text-gray-700">Select Manager</label>
-                    <button
-                        onClick={() => setShowDropdown(!showDropdown)}
-                        className="border border-gray-300 rounded-md px-4 py-2 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] flex items-center justify-between"
-                    >
-                        <span className="text-sm text-gray-800">{`All Selected (${selectedManagers.length})`}</span>
-                        <FiChevronDown className="text-gray-600 text-lg" />
-                    </button>
-                    {showDropdown && (
-                        <div className="absolute top-full mt-1 bg-white border border-gray-200 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded-md w-full z-10">
-                            {["Awab Fakih "].map((managerName) => (
-                                <label
-                                    key={managerName}
-                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                    <input
-                                        className="w-5 h-5 text-blue-600"
-                                        type="checkbox"
-                                        checked={selectedManagers.includes(managerName)}
-                                        onChange={() =>
-                                            setSelectedManagers((prev) =>
-                                                prev.includes(managerName)
-                                                    ? prev.filter((m) => m !== managerName)
-                                                    : [...prev, managerName]
-                                            )
-                                        }
-                                    />
-                                    {managerName}
-                                </label>
-                            ))}
-                        </div>
-                    )}
-                </div>
+  <label className="mb-1 font-medium text-gray-700">Select Manager</label>
+  <button
+    onClick={() => setShowDropdown(!showDropdown)}
+    className="border border-gray-300 rounded-md px-4 py-2 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] flex items-center justify-between"
+  >
+    <span className="text-sm text-gray-800">
+      {selectedManagers.length === 0
+        ? "Select Manager"
+        : selectedManagers.join(", ")}
+    </span>
+    <FiChevronDown className="text-gray-600 text-lg" />
+  </button>
+
+  {showDropdown && (
+  <div
+    className="absolute top-full mt-1 bg-white border border-gray-200 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded-md w-full z-10"
+    onMouseLeave={() => setShowDropdown(false)}
+  >
+    {["Awab Fakih"].map((managerName) => (
+      <label
+        key={managerName}
+        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        <input
+          className="w-5 h-5 text-blue-600"
+          type="checkbox"
+          checked={selectedManagers.includes(managerName)}
+          onChange={() =>
+            setSelectedManagers((prev) =>
+              prev.includes(managerName)
+                ? prev.filter((m) => m !== managerName)
+                : [...prev, managerName]
+            )
+          }
+        />
+        {managerName}
+      </label>
+    ))}
+  </div>
+)}
+
+</div>
+
 
                 <div className="flex gap-4">
                     <button
                         onClick={() => addTimelineItem("meeting")}
-                        className="bg-black text-white px-4 py-2 rounded-lg cursor-pointer"
+                        className="bg-[#018ABE] text-white px-4 py-2 rounded-lg cursor-pointer"
                     >
                         Add Meeting
                     </button>
                     <button
                         onClick={() => addTimelineItem("miscellaneous")}
-                        className="bg-black text-white px-4 py-2 rounded-lg cursor-pointer"
+                        className="bg-[#018ABE] text-white px-4 py-2 rounded-lg cursor-pointer"
                     >
                         Add Miscellaneous
                     </button>
@@ -303,17 +328,17 @@ export default function Timeline() {
                 />
             </div>
 
-            <div className="rounded-md overflow-x-auto mb-4 border-t-2 border-[#018ABE]">
-                <table className="w-full table-auto border-collapse rounded-lg overflow-hidden">
-                    <thead>
-                        <tr className="bg-[#018ABE] text-white text-left">
-                            <th className="px-4 py-2 w-[12%] ">Bucket</th>
-                            <th className="px-4 py-2 border-l border-r w-[40%] border-white">Task</th>
-                            <th className="px-4 py-2 border-l border-r w-[20%] border-white">Time</th>
-                            <th className="px-4 py-2 border-l border-r w-[10%] border-white">Duration</th>
-                            <th className="px-4 py-2 border-l border-r border-white w-[5%] ">Action</th>
-                        </tr>
-                    </thead>
+            <div className="rounded-md overflow-x-auto mb-4 ">
+  <table className="w-full table-auto border-separate border-spacing-0">
+    <thead>
+      <tr className="bg-[#018ABE] text-white text-center">
+        <th className="px-4 py-2 w-[14%] whitespace-nowrap rounded-tl-md">Bucket</th>
+        <th className="px-4 py-2 border-l border-white w-[40%] whitespace-nowrap">Task</th>
+        <th className="px-4 py-2 border-l border-white w-[20%] whitespace-nowrap">Time</th>
+        <th className="px-4 py-2 border-l border-white w-[10%] whitespace-nowrap">Duration</th>
+        <th className="px-4 py-2 border-l border-white w-[5%] whitespace-nowrap rounded-tr-md">Action</th>
+      </tr>
+    </thead>
                     <tbody>
                         {items.map((item, index) => (
                             <tr
@@ -324,7 +349,7 @@ export default function Timeline() {
                                 <td className="px-4 py-2 border-4 border-white relative">
                                     <span></span>
                                     <textarea
-                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        className="w-full h-10  text-center border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
                                         readOnly
                                         value={item.bucket}
                                     />
@@ -337,10 +362,10 @@ export default function Timeline() {
                                         onChange={(e) => updateItem(index, "task", e.target.value)}
                                     />
                                 </td>
-                                <td className="px-4 py-2 border-4 border-white relative">
+                                <td className="px-4 py-2 border-4  border-white relative">
                                     <span className="custom-border-left"></span>
                                     <textarea
-                                        className="w-full h-10 pl-4 border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
+                                        className="w-full h-10  text-center border border-gray-500 shadow-[0px_2px_0px_rgba(0,0,0,0.2)] rounded p-1 resize-none overflow-hidden"
                                         readOnly
                                         value={item.timeRange}
                                     />
@@ -363,22 +388,21 @@ export default function Timeline() {
                             </tr>
                         ))}
                         <tr className="bg-gray-100 font-semibold">
-                            <td className="px-4 py-2 text-center" colSpan={3}>
-                                Total Hours
-                            </td>
-                            <td className="px-4 py-2 text-center border-2 border-white shadow-[0px_2px_0px_rgba(0,0,0,0.2)]">
-                                <span
-                                    className={`px-2 py-1 rounded ${isLessThanEightHours ? "bg-[#fc6a5d] text-black" : "bg-[#61c973] text-black"}`}
-                                >
-                                    {totalTime}
-                                </span>
-                            </td>
-                            <td className="px-4 py-2"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <td className="text-right relative right-0 px-16 py-2" colSpan={3}>
+  Total Hours
+</td>
 
+                            <td className="px-4 py-2 text-center border-l-2 border-r-2 border-white">
+
+<span className={`px-2 py-1 rounded ${isLessThanEightHours ? "bg-[#fc6a5d] text-black" : "bg-[#61c973] text-black"}`}>
+    {totalTime}
+</span>
+</td>
+<td className="px-4 py-2"></td>
+</tr>
+</tbody>
+</table>
+</div>
             <div className="flex justify-center items-center gap-4 mb-6">
                 <button
                     onClick={handleSubmit}

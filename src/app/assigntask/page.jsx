@@ -4,6 +4,7 @@ import NavBar from '@/components/layout/navbar';
 import React from 'react'
 import AssignTask from '@/components/assigntask/assigntask';
 
+
 export default function Home() {
     return (
         <div className="h-screen overflow-hidden"> {/* Prevent page scroll */}

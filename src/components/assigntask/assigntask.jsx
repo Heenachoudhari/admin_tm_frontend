@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { AiFillDelete } from "react-icons/ai";
 
 
-export default function AddTask() {
+export default function AssignTask() {
   const underlineRef = useRef(null);
   const fileInputRef = useRef(null);
 
