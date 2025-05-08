@@ -51,16 +51,16 @@ const CalendarWidget = () => {
                     const isSunday = idx % 7 === 0;
                     const isEmpty = date === '';
                     const baseClasses =
-                        'h-12 flex items-center justify-center rounded-lg text-sm relative transition-all';
+                        'h-16 w-16 flex items-center justify-center rounded-lg text-sm shadow-md relative transition-all';
 
-                    let styleClasses = 'bg-gray-100 text-gray-800';
+                    let styleClasses = 'bg-[#ECEEFD] text-gray-800';
 
                     if (isEmpty) {
                         return <div key={idx}></div>;
                     }
 
                     if (isSunday) {
-                        styleClasses = 'bg-cyan-600 text-white';
+                        styleClasses = 'bg-[#67B2CF] text-white';
                     }
 
                     if (eventIndicators[date]) {

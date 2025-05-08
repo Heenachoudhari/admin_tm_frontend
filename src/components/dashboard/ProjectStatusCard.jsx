@@ -36,9 +36,9 @@ export default function ProjectStatusCard({
 
     return (
         <div className="bg-white relative rounded-xl shadow-[0px_3px_4px_rgba(0,0,0,0.4)] p-4 flex justify-between px-14 items-center w-full max-w-xl h-44">
-            <div className="absolute top-2 right-4 text-[#7B7B7B]">
+            <button className="absolute top-2 right-4 text-[#7B7B7B] cursor-pointer">
                 <FaEllipsisH size={35} />
-            </div>
+            </button>
 
             <div className={`p-3 mt-4 rounded-lg ${iconBgColor}`}>
                 <Icon size={70} className={iconColor} />
