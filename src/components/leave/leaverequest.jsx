@@ -16,23 +16,33 @@ export default function Leave() {
   return (
     <div className="max-w-3xl mx-auto">
       {/* Leave Request Heading aligned with white box */}
-      <h1 className="text-2xl font-bold mb-4 border-b-2 border-red-500 w-fit">Leave Request</h1>
+      <h1 className="text-2xl font-bold mt-6 mb-10 border-b-2 border-red-500 w-fit text-left ml-0">
+  Leave Request
+</h1>
+
+
 
       {/* White Box */}
-      <div className="bg-white rounded-lg shadow p-8 border border-gray-300 h-[500px] w-[700px]">
-        <div className="space-y-4">
+      <div className="bg-white rounded-lg shadow p-8 border border-gray-300 h-[500px] w-[700px] ml-0">
+
+
+        <div className="space-y-7">
           {/* Submitted On */}
           <div>
-            <p className="font-semibold">Submitted On<span className="font-normal ml-7">: 01/05/2025</span></p>
-          </div>
+  <p className="font-semibold font-poppins text-lg">
+    Submitted On
+    <span className="font-normal ml-7 text-base">: 01/05/2025</span>
+  </p>
+</div>
+
 
           {/* Employee Info */}
           <div>
-            <p className="font-semibold">Emp Information :</p>
+            <p className="font-semibold font-poppins text-lg">Emp Information :</p>
             <div className="ml-1 space-y-2 mt-4">
-              <p>Emp Regn. No. <span className="ml-3">: 25306</span> <span className="ml-68">DOJ : 01/01/2025</span></p>
-              <p>Emp Name <span className="ml-10">: Prashant P</span> <span className="ml-50">Department : IT Service</span></p>
-              <p>Designation <span className="ml-9">: Graphic Designer</span></p>
+              <p>Emp Regn. No. <span className="ml-3">: 25306</span> <span className="ml-69">DOJ : 01/01/2025</span></p>
+              <p>Emp Name <span className="ml-10">: Prashant P</span> <span className="ml-47">Department : IT Service</span></p>
+              <p>Designation <span className="ml-8">: Graphic Designer</span></p>
             </div>
           </div>
 

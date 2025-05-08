@@ -25,8 +25,23 @@ export default function LeaveTable() {
       </h2>
       <span className="text-2xl font-bold text-gray-800">est</span>
 
+{/* Status Dropdown */}
+<div className="flex justify-end -mt-5 mb-10">
+<label htmlFor="status" className="mr-3 text-black font-medium font-poppins text-lg">Status:</label>
+
+<select
+  id="status"
+  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-[1px_1px_10px_lightgray] font-poppins"
+>
+  <option value="pending">Pending</option>
+  <option value="approved">Approved</option>
+  <option value="rejected">Rejected</option>
+</select>
+
+</div>
+
       {/* Table */}
-      <div className="overflow-x-auto mt-10 rounded-2xl shadow-lg">
+      <div className="overflow-x-auto -mt-4 rounded-2xl shadow-lg">
         <table className="min-w-full border-collapse table-auto text-sm">
           <thead>
             <tr className="bg-[#018ABE] text-white">
