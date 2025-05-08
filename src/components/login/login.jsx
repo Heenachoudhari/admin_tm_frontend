@@ -144,7 +144,7 @@ export default function Loginpage() {
           <Image src="/login/vector_flag.png" alt="vector" height={50} width={50} className="absolute z-0" style={{ bottom: '300px', right: '75px' }} />
 
           {/* Heading */}
-          <h1 className="text-4xl font-bold text-black mb-6 z-10">User Login</h1>
+          <h1 className="text-4xl font-bold text-black mb-6 z-10">Admin Login</h1>
 
           {/* Card */}
           <div className="bg-white rounded-2xl shadow-[1px_4px_10px_lightgray] p-10 w-[550px] h-[400px] max-w-full z-10">
