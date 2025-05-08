@@ -71,10 +71,10 @@ export default function DocumentTable() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
-          <span className="border-b-4 border-red-500 pb-1 ml-38">Document</span>
+          <span className="border-b-4 border-red-500 pb-1 ml-8">Document</span>
         </h1>
 
-        <div className="flex items-center mr-38 gap-4">
+        <div className="flex items-center mr-9 gap-4">
           {/* Search */}
           <div className="flex items-center gap-2 bg-white border-none rounded-full px-4 py-2 shadow">
             <Search className="w-4 h-4 text-gray-500" />
@@ -108,8 +108,9 @@ export default function DocumentTable() {
 
       {/* Table Container */}
       <div className="overflow-x-auto flex justify-center">
-        <div className="w-[95%] md:w-[90%] lg:w-[80%] rounded-xl shadow-[0px_5px_10px_lightgray] bg-white overflow-hidden my-8 ">
-        <table className="min-w-full border-separate border-spacing-0">
+  <div className="w-full md:w-[98%] lg:w-[95%] rounded-xl shadow-[0px_5px_10px_lightgray] bg-white overflow-hidden my-8">
+    <table className="min-w-full border-separate border-spacing-0">
+
           <thead style={{ backgroundColor: '#018ABE' }} className="text-white">
               <tr className="text-center">
               <th className="p-3 border-r border-white rounded-tl-lg">Sr No.</th>

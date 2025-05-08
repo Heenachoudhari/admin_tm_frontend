@@ -14,16 +14,17 @@ export default function LeaveTable() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 px-4">
-      {/* Heading */}
-      <h2 className="text-2xl font-bold mb-1 relative inline-block text-gray-800">
-        <span
-          ref={underlineRef}
-          className="absolute left-0 bottom-0 h-[2px] bg-red-500 w-full"
-        ></span>
-        Leave Requ
-      </h2>
-      <span className="text-2xl font-bold text-gray-800">est</span>
+    <div className="max-w-6xl mt-10 px-4">
+  {/* Heading */}
+  <h2 className="text-2xl font-bold mb-1 relative inline-block text-gray-800">
+    <span
+      ref={underlineRef}
+      className="absolute left-0 bottom-0 h-[2px] bg-red-500 w-full"
+    ></span>
+    Leave Requ
+  </h2>
+  <span className="text-2xl font-bold text-gray-800">est</span>
+
 
 {/* Status Dropdown */}
 <div className="flex justify-end -mt-5 mb-10">
@@ -41,7 +42,8 @@ export default function LeaveTable() {
 </div>
 
       {/* Table */}
-      <div className="overflow-x-auto -mt-4 rounded-2xl shadow-lg">
+      <div className="overflow-x-auto -mt-4 rounded-2xl shadow-lg -ml-1 mr-auto">
+
         <table className="min-w-full border-collapse table-auto text-sm">
           <thead>
             <tr className="bg-[#018ABE] text-white">

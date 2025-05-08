@@ -46,12 +46,12 @@ export default function Addteammember() {
     <div className="min-h-screen bg-white p-8 ">
       <ToastContainer />
 
-      <h1 className="text-3xl font-bold mb-2 ml-72">
+      <h1 className="text-3xl font-bold mb-2 ml-2">
         Add Team Member
         <div className="w-44 h-1 bg-red-500 mt-1 rounded"></div>
       </h1>
 
-      <div className="bg-white rounded-xl shadow-lg border border-[#C2B7B7] p-8 max-w-3xl mx-auto mt-5">
+      <div className="bg-white rounded-xl shadow-lg border border-[#C2B7B7] p-8 max-w-3xl mx-auto ml-5 mt-5">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6">
           <div>
             <label className="block font-medium mb-1">First Name :</label>

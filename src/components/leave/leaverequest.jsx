@@ -16,14 +16,15 @@ export default function Leave() {
   return (
     <div className="max-w-3xl mx-auto">
       {/* Leave Request Heading aligned with white box */}
-      <h1 className="text-2xl font-bold mt-6 mb-10 border-b-2 border-red-500 w-fit text-left ml-0">
+      <h1 className="text-2xl font-bold mt-6 mb-10 border-b-2 border-red-500 w-fit text-left -ml-51">
   Leave Request
 </h1>
 
 
 
       {/* White Box */}
-      <div className="bg-white rounded-lg shadow p-8 border border-gray-300 h-[500px] w-[700px] ml-0">
+      <div className="bg-white rounded-lg shadow p-8 border border-gray-300 h-[500px] w-[700px] -ml-51">
+
 
 
         <div className="space-y-7">

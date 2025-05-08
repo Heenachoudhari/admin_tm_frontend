@@ -27,11 +27,12 @@ export default function AddDocument() {
       <Toaster /> {/* ✅ Toast container */}
 
       <h1 className="text-4xl font-bold mb-8">
-        <span className="border-b-4 border-red-500 pb-1 ml-88">Add Document</span>
+        <span className="border-b-4 border-red-500 pb-1 ml-8">Add Document</span>
       </h1>
 
-      <div className="bg-white rounded-xl shadow p-8 max-w-3xl mx-auto">
-        <div className="grid grid-cols-2 gap-8 mb-8">
+      <div className="bg-white rounded-xl shadow p-8 max-w-3xl ml-8">
+  <div className="grid grid-cols-2 gap-8 mb-8">
+
         <div>
   <label className="block font-medium mb-2">First Name :</label>
   <input
